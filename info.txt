@@ -1,0 +1,5 @@
+NOTE
+anemia_model.kera: model dự đoán
+main.ipynb: backend train model
+visualization.ipynb: trực quan hóa bằng biểu đồ và sô liệu
+app.py: chạy demo
