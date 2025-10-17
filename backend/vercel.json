@@ -2,19 +2,19 @@
   "version": 2,
   "builds": [
     {
-      "src": "app.py",
+      "src": "api/vercel_handler.py",
       "use": "@vercel/python"
     }
   ],
   "routes": [
     {
-      "src": "/(.*)",
-      "dest": "/app.py"
+      "src": "/api/(.*)",
+      "dest": "/api/vercel_handler.py"
     }
   ],
   "functions": {
-    "app.py": {
-      "maxDuration": 30
+    "api/vercel_handler.py": {
+      "maxDuration": 10
     }
   },
   "env": {
