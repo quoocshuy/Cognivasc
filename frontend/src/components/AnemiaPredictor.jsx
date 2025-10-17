@@ -18,7 +18,9 @@ export default function AnemiaPredictor() {
     formData.append("file", file);
 
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/predict`, {
+      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+      console.log('API URL:', apiUrl); // Debug log
+      const res = await fetch(`${apiUrl}/predict`, {
         method: "POST",
         body: formData,
       });
