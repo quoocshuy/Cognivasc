@@ -7,18 +7,18 @@ from PIL import Image
 # =============================================================================
 # CẤU HÌNH VÀ TẢI MODEL
 # =============================================================================
-MODEL_PATH = "backend/anemia_model.keras"
+MODEL_PATH = "anemia_model.keras"
 IMG_SIZE = (224, 224)
 OPTIMIZED_THRESHOLD = 0.1641
 CLASS_NAMES = ['anemia', 'non-anemia']
 ANEMIA_INDEX = CLASS_NAMES.index('anemia')
 
-print("Đang tải model...")
+print("Dang tai model...")
 try:
     model = tf.keras.models.load_model(MODEL_PATH)
-    print("✅ Model đã được tải thành công.")
+    print("Model da duoc tai thanh cong.")
 except Exception as e:
-    print(f"LỖI: Không thể tải model. Hãy chắc chắn file '{MODEL_PATH}' tồn tại.")
+    print(f"LOI: Khong the tai model. Hay chac chan file '{MODEL_PATH}' ton tai.")
     print(e)
     model = None
 
@@ -41,18 +41,18 @@ def predict(input_image):
     """Hàm chính: nhận ảnh, dự đoán, trả về lời khuyên và độ tin cậy."""
     try:
         if model is None:
-            raise ValueError("Model chưa được tải thành công.")
+            raise ValueError("Model chua duoc tai thanh cong.")
 
         processed_input = preprocess_image(input_image)
         raw_prob = model.predict(processed_input)[0][0]
 
         # Vì model output = P(non-anemia), nên:
-        anemia_score = 1 - raw_prob  
+        anemia_score = 1 - raw_prob
 
         print("-" * 30)
         print(f"[DEBUG] raw_prob (P[non-anemia]): {raw_prob:.4f}")
         print(f"[DEBUG] anemia_score (P[anemia]): {anemia_score:.4f}")
-        print(f"[DEBUG] Ngưỡng đang sử dụng: {OPTIMIZED_THRESHOLD}")
+        print(f"[DEBUG] Nguong dang su dung: {OPTIMIZED_THRESHOLD}")
 
         if anemia_score > OPTIMIZED_THRESHOLD:
             result_status = "Nghi ngờ Thiếu máu"
@@ -60,7 +60,7 @@ def predict(input_image):
             <p style='font-size: 1.2em; color: #D32F2F; text-align: center;'>
             <b>Kết quả: Có dấu hiệu Thiếu máu</b>
             </p>
-            <p><b>Lời khuyên:</b> Kết quả phân tích cho thấy các dấu hiệu của thiếu máu. 
+            <p><b>Lời khuyên:</b> Kết quả phân tích cho thấy các dấu hiệu của thiếu máu.
             Chúng tôi khuyên bạn nên <b>tham khảo ý kiến bác sĩ sớm</b> để được chẩn đoán và tư vấn chính xác.</p>
             """
         else:
@@ -69,11 +69,11 @@ def predict(input_image):
             <p style='font-size: 1.2em; color: #388E3C; text-align: center;'>
             <b>Kết quả: Không có dấu hiệu Thiếu máu</b>
             </p>
-            <p><b>Lời khuyên:</b> Dựa trên hình ảnh, mô hình không phát hiện dấu hiệu thiếu máu. 
+            <p><b>Lời khuyên:</b> Dựa trên hình ảnh, mô hình không phát hiện dấu hiệu thiếu máu.
             Tuy nhiên, hãy luôn duy trì lối sống lành mạnh và <b>khám sức khỏe định kỳ</b>.</p>
             """
 
-        print(f"[DEBUG] Kết quả: {result_status} (Vì {anemia_score:.4f} so với ngưỡng {OPTIMIZED_THRESHOLD})")
+        print(f"[DEBUG] Ket qua: {result_status} (Vi {anemia_score:.4f} so voi nguong {OPTIMIZED_THRESHOLD})")
         print("-" * 30)
 
         confidence_output = {
@@ -83,10 +83,10 @@ def predict(input_image):
         return advice_text, confidence_output
 
     except Exception as e:
-        print("!!!!!!!!!!!!!! LỖI TRONG QUÁ TRÌNH DỰ ĐOÁN !!!!!!!!!!!!!!")
+        print("!!!!!!!!!!!!!! LOI TRONG QUA TRINH DU DOAN !!!!!!!!!!!!!!")
         print(e)
-        error_message = f"Đã có lỗi xảy ra: {e}"
-        return f"<p style='color: red;'><b>Lỗi:</b> {error_message}</p>", {"Lỗi": 1.0}
+        error_message = f"Da co loi xay ra: {e}"
+        return f"<p style='color: red;'><b>Loi:</b> {error_message}</p>", {"Loi": 1.0}
 
 
 # =============================================================================
@@ -96,7 +96,7 @@ with gr.Blocks(
     theme=gr.themes.Soft(font=[gr.themes.GoogleFont("Inter"), "Arial", "sans-serif"]),
     css="body, .gradio-container { font-size: 16px !important; } footer {display: none !important}"
 ) as app:
-    
+
     gr.Markdown(
         """
         <div style="text-align: center;">
@@ -105,11 +105,11 @@ with gr.Blocks(
         </div>
         """
     )
-    
+
     with gr.Row():
         with gr.Column(scale=1):
             input_image = gr.Image(type="pil", label="Tải ảnh lên hoặc chọn ảnh mẫu")
-            
+
             with gr.Accordion("💡 Hướng dẫn chụp ảnh để có kết quả tốt nhất", open=False):
                 gr.Markdown("""
                 1.  **Ánh sáng:** Chụp ở nơi có đủ sáng, tránh bóng tối và đèn flash trực tiếp.
@@ -124,13 +124,13 @@ with gr.Blocks(
                 label="Ảnh mẫu"
             )
             submit_button = gr.Button("Bắt đầu Phân tích", variant="primary", scale=2)
-            
+
         with gr.Column(scale=1):
             gr.Markdown("### **Kết quả Phân tích**")
-            
+
             with gr.Accordion("1. Lời khuyên & Kết quả", open=True):
                 advice_output = gr.Markdown()
-            
+
             with gr.Accordion("2. Phân tích Độ tin cậy của Model", open=True):
                 confidence_chart = gr.Label(label="Điểm tin cậy", num_top_classes=2)
 
@@ -152,4 +152,4 @@ with gr.Blocks(
     )
 
 if __name__ == "__main__":
-    app.launch(share=True)
+    app.launch(share=True, server_port=8080)

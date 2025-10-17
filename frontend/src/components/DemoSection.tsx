@@ -1,17 +1,23 @@
 import { useState } from "react";
-import { Upload, AlertCircle, CheckCircle2, Loader2 } from "lucide-react";
+import { Upload, AlertCircle, CheckCircle2, Loader2, Heart, Activity } from "lucide-react";
 import { Button } from "./ui/button";
 import { Card } from "./ui/card";
 import { toast } from "sonner";
+
+interface PredictionResult {
+  label: string;
+  advice: string;
+  confidence: {
+    "Thiếu máu": number;
+    "Không Thiếu máu": number;
+  };
+}
 
 export const DemoSection = () => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
-  const [result, setResult] = useState<{
-    prediction: "positive" | "negative";
-    confidence: number;
-  } | null>(null);
+  const [result, setResult] = useState<PredictionResult | null>(null);
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -22,7 +28,7 @@ export const DemoSection = () => {
       }
       setSelectedFile(file);
       setResult(null);
-      
+
       const reader = new FileReader();
       reader.onloadend = () => {
         setPreview(reader.result as string);
@@ -32,44 +38,34 @@ export const DemoSection = () => {
   };
 
   const analyzeImage = async () => {
-  if (!selectedFile) return;
-  setIsAnalyzing(true);
+    if (!selectedFile) return;
+    setIsAnalyzing(true);
 
-  const formData = new FormData();
-  formData.append("file", selectedFile);
+    const formData = new FormData();
+    formData.append("file", selectedFile);
 
-  try {
-    // Gọi API thật đến backend FastAPI
-    const res = await fetch("http://localhost:8000/predict", {
-      method: "POST",
-      body: formData,
-    });
+    try {
+      // Gọi API thật đến backend FastAPI
+      const res = await fetch("http://localhost:8000/predict", {
+        method: "POST",
+        body: formData,
+      });
 
-    if (!res.ok) throw new Error(`HTTP error! Status: ${res.status}`);
+      if (!res.ok) throw new Error(`HTTP error! Status: ${res.status}`);
 
-    const data = await res.json();
-    console.log("Kết quả backend:", data);
+      const data = await res.json();
+      console.log("Kết quả backend:", data);
 
-    // Backend trả về ví dụ: { "label": "Thiếu máu", "confidence": { "Thiếu máu": 0.8, "Không thiếu máu": 0.2 } }
-    const isAnemia = data.label.toLowerCase().includes("thiếu");
-    const confidence =
-      typeof data.confidence === "number"
-        ? data.confidence
-        : Object.values(data.confidence)[0];
-
-    setResult({
-      prediction: isAnemia ? "positive" : "negative",
-      confidence: Math.round(confidence * 100) || 0,
-    });
-
-    toast.success("Phân tích hoàn tất!");
-  } catch (err) {
-    console.error("Lỗi khi gọi API:", err);
-    toast.error("❌ Lỗi kết nối đến server! Kiểm tra backend.");
-  } finally {
-    setIsAnalyzing(false);
-  }
-};
+      // Lưu trực tiếp response từ backend
+      setResult(data);
+      toast.success("Phân tích hoàn tất!");
+    } catch (err) {
+      console.error("Lỗi khi gọi API:", err);
+      toast.error("❌ Lỗi kết nối đến server! Kiểm tra backend.");
+    } finally {
+      setIsAnalyzing(false);
+    }
+  };
 
 
   return (
@@ -138,33 +134,72 @@ export const DemoSection = () => {
 
               {/* Results */}
               {result && !isAnalyzing && (
-                <div className={`rounded-xl p-6 ${
-                  result.prediction === "negative" 
-                    ? "bg-green-50 border-2 border-green-300" 
-                    : "bg-red-50 border-2 border-red-300"
-                }`}>
-                  <div className="flex items-start space-x-4">
-                    {result.prediction === "negative" ? (
-                      <CheckCircle2 className="w-8 h-8 text-green-600 flex-shrink-0" />
-                    ) : (
-                      <AlertCircle className="w-8 h-8 text-red-600 flex-shrink-0" />
-                    )}
-                    <div className="flex-1">
-                      <h3 className="text-xl font-bold mb-2">
-                        {result.prediction === "negative" 
-                          ? "No Anemia Detected" 
-                          : "Anemia Detected"}
-                      </h3>
-                      <p className="text-muted-foreground mb-3">
-                        Độ tin cậy: {result.confidence}%
-                      </p>
-                      <p className="text-sm">
-                        {result.prediction === "negative" 
-                          ? "The analysis suggests normal hemoglobin levels based on conjunctiva appearance." 
-                          : "The analysis indicates possible anemia. Please consult a healthcare professional for proper diagnosis and treatment."}
-                      </p>
+                <div className="space-y-6">
+                  {/* Main Result Card */}
+                  <div className={`rounded-xl p-6 ${
+                    result.label.includes("Không nghi ngờ")
+                      ? "bg-green-50 border-2 border-green-300"
+                      : "bg-red-50 border-2 border-red-300"
+                  }`}>
+                    <div className="flex items-start space-x-4">
+                      {result.label.includes("Không nghi ngờ") ? (
+                        <CheckCircle2 className="w-8 h-8 text-green-600 flex-shrink-0" />
+                      ) : (
+                        <AlertCircle className="w-8 h-8 text-red-600 flex-shrink-0" />
+                      )}
+                      <div className="flex-1">
+                        <h3 className="text-xl font-bold mb-2 text-gray-800">
+                          {result.label}
+                        </h3>
+                        <div
+                          className="text-sm text-gray-700"
+                          dangerouslySetInnerHTML={{ __html: result.advice }}
+                        />
+                      </div>
                     </div>
                   </div>
+
+                  {/* Confidence Breakdown */}
+                  <Card className="p-6">
+                    <h4 className="text-lg font-semibold mb-4 flex items-center">
+                      <Activity className="w-5 h-5 mr-2" />
+                      Chi tiết độ tin cậy
+                    </h4>
+                    <div className="space-y-4">
+                      {Object.entries(result.confidence).map(([key, value]) => (
+                        <div key={key} className="space-y-2">
+                          <div className="flex justify-between items-center">
+                            <span className="font-medium text-gray-700">
+                              {key === "Thiếu máu" ? (
+                                <span className="flex items-center">
+                                  <Heart className="w-4 h-4 mr-2 text-red-500" />
+                                  {key}
+                                </span>
+                              ) : (
+                                <span className="flex items-center">
+                                  <CheckCircle2 className="w-4 h-4 mr-2 text-green-500" />
+                                  {key}
+                                </span>
+                              )}
+                            </span>
+                            <span className="font-bold text-lg">
+                              {(value * 100).toFixed(1)}%
+                            </span>
+                          </div>
+                          <div className="w-full bg-gray-200 rounded-full h-3">
+                            <div
+                              className={`h-3 rounded-full transition-all duration-500 ${
+                                key === "Thiếu máu"
+                                  ? "bg-gradient-to-r from-red-400 to-red-600"
+                                  : "bg-gradient-to-r from-green-400 to-green-600"
+                              }`}
+                              style={{ width: `${value * 100}%` }}
+                            />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </Card>
                 </div>
               )}
 
