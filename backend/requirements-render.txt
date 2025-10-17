@@ -1,38 +1,9 @@
-# Render-optimized requirements for Cognivasc Backend
-# Optimized for Render free tier with memory constraints
-
-# Core FastAPI dependencies
-fastapi==0.104.1
-uvicorn[standard]==0.24.0
-python-multipart==0.0.6
-
-# AI/ML dependencies - optimized versions
-tensorflow==2.15.0
-numpy==1.24.3
-opencv-python-headless==4.8.1.78
-Pillow==10.1.0
-
-# Data processing - lightweight versions
-pandas==2.1.4
-scikit-learn==1.3.2
-
-# HTTP and networking
-httpx==0.25.2
-requests==2.31.0
-
-# Environment and configuration
-python-dotenv==1.0.0
-
-# Logging and monitoring
-structlog==23.2.0
-
-# Render-specific optimizations
-gunicorn==21.2.0
-psutil==5.9.6
-
-# Memory optimization
-pympler==0.9
-
-# Development and testing (optional)
-pytest==7.4.3
-pytest-asyncio==0.21.1
+# Requirements optimized for Render deployment
+fastapi
+uvicorn[standard]
+tensorflow-cpu
+pillow
+numpy
+opencv-python-headless
+gradio
+python-multipart
