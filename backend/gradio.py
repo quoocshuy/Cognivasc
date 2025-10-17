@@ -7,7 +7,7 @@ from PIL import Image
 # =============================================================================
 # CẤU HÌNH VÀ TẢI MODEL
 # =============================================================================
-MODEL_PATH = "anemia_model.keras"
+MODEL_PATH = "backend/anemia_model.keras"
 IMG_SIZE = (224, 224)
 OPTIMIZED_THRESHOLD = 0.1641
 CLASS_NAMES = ['anemia', 'non-anemia']
@@ -99,7 +99,7 @@ with gr.Blocks(
     
     gr.Markdown(
         """
-        <div style="text-align: center;"> 
+        <div style="text-align: center;">
             <h1>Ứng dụng Sàng lọc Thiếu máu qua Ảnh kết mạc</h1>
             <p>Một dự án nghiên cứu khoa học sử dụng Trí tuệ nhân tạo</p>
         </div>
@@ -153,4 +153,3 @@ with gr.Blocks(
 
 if __name__ == "__main__":
     app.launch(share=True)
-    
