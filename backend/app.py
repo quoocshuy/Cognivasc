@@ -231,7 +231,7 @@ async def health_check():
             "loaded": model_loaded,
             "ready": validate_model_ready(),
             "load_time": model_load_time,
-            "path": MODEL_PATH,
+            "path": str(MODEL_PATH),
             "exists": os.path.exists(MODEL_PATH)
         },
         "server": {
