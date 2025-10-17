@@ -1,6 +1,7 @@
+# Requirements optimized for Render deployment
 fastapi
 uvicorn[standard]
-tensorflow
+tensorflow-cpu
 pillow
 numpy
 opencv-python-headless

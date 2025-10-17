@@ -4,13 +4,13 @@
 
 Project Cognivasc có thể deploy miễn phí trên nhiều platform khác nhau. Tuy nhiên, do model AI lớn (4.8MB) và yêu cầu TensorFlow, cần chọn platform phù hợp.
 
-## 🚀 **Phương Án Tốt Nhất: Railway + Vercel**
+## 🚀 **Phương Án Tốt Nhất: Render + Vercel**
 
-### **Backend trên Railway** (Miễn phí)
+### **Backend trên Render** (Miễn phí)
+- ✅ 750 giờ/tháng miễn phí
 - ✅ Hỗ trợ Python + TensorFlow
 - ✅ Persistent storage cho model
-- ✅ Không giới hạn thời gian chạy
-- ✅ Custom domain
+- ✅ Auto SSL và custom domain
 
 ### **Frontend trên Vercel** (Miễn phí)
 - ✅ Tốc độ nhanh nhất
@@ -22,7 +22,7 @@ Project Cognivasc có thể deploy miễn phí trên nhiều platform khác nhau
 
 ## 🛠️ **Hướng Dẫn Deploy Chi Tiết**
 
-### **Bước 1: Deploy Backend trên Railway**
+### **Bước 1: Deploy Backend trên Render**
 
 #### 1.1. Chuẩn bị
 ```bash
@@ -31,29 +31,34 @@ git clone <your-repo-url>
 cd Cognivasc
 ```
 
-#### 1.2. Tạo Railway Project
-1. Truy cập [railway.app](https://railway.app)
+#### 1.2. Tạo Render Project
+1. Truy cập [render.com](https://render.com)
 2. Đăng nhập bằng GitHub
-3. Click "New Project" → "Deploy from GitHub repo"
-4. Chọn repository Cognivasc
-5. Chọn folder `backend`
+3. Click "New" → "Web Service"
+4. Connect repository Cognivasc
+5. Cấu hình:
+   - **Name**: `cognivasc-backend`
+   - **Environment**: `Python 3`
+   - **Build Command**: `pip install -r requirements.txt`
+   - **Start Command**: `python app.py`
+   - **Health Check Path**: `/health`
 
 #### 1.3. Cấu hình Environment Variables
-Trong Railway dashboard, thêm:
+Trong Render dashboard, thêm:
 ```
 API_HOST=0.0.0.0
-API_PORT=$PORT
+API_PORT=8000
 LOG_LEVEL=INFO
 CORS_ORIGINS=https://your-frontend-url.vercel.app
 ```
 
 #### 1.4. Deploy
-Railway sẽ tự động:
+Render sẽ tự động:
 - Detect Python project
 - Install dependencies từ `requirements.txt`
 - Chạy `python app.py`
 
-**URL Backend**: `https://your-project-name.railway.app`
+**URL Backend**: `https://cognivasc-backend.onrender.com`
 
 ---
 
@@ -67,7 +72,7 @@ cd frontend
 #### 2.2. Cập nhật API URL
 Tạo file `frontend/.env.production`:
 ```env
-VITE_API_URL=https://your-project-name.railway.app
+VITE_API_URL=https://cognivasc-backend.onrender.com
 ```
 
 #### 2.3. Deploy trên Vercel
