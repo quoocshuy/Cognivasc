@@ -31,6 +31,12 @@ HOST = os.getenv("API_HOST", DEFAULT_HOST)
 PORT = int(os.getenv("API_PORT", DEFAULT_PORT))
 WORKERS = int(os.getenv("API_WORKERS", DEFAULT_WORKERS))
 
+# Render-specific configuration
+if os.getenv("RENDER"):
+    # Render automatically sets PORT environment variable
+    PORT = int(os.getenv("PORT", DEFAULT_PORT))
+    HOST = "0.0.0.0"  # Render requires 0.0.0.0
+
 # =============================================================================
 # CẤU HÌNH LOGGING
 # =============================================================================
@@ -45,6 +51,15 @@ CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOW_METHODS = ["*"]
 CORS_ALLOW_HEADERS = ["*"]
 
+# Render-specific CORS configuration
+if os.getenv("RENDER"):
+    # Allow Render frontend URLs
+    render_frontend = os.getenv("RENDER_FRONTEND_URL", "")
+    if render_frontend:
+        CORS_ORIGINS = [render_frontend, "https://cognivasc-frontend.onrender.com"]
+    else:
+        CORS_ORIGINS = ["*"]
+
 # =============================================================================
 # CẤU HÌNH UPLOAD
 # =============================================================================
@@ -57,6 +72,12 @@ MIN_IMAGE_SIZE = (50, 50)
 # =============================================================================
 PREDICTION_TIMEOUT = int(os.getenv("PREDICTION_TIMEOUT", 30))  # seconds
 MODEL_LOAD_TIMEOUT = int(os.getenv("MODEL_LOAD_TIMEOUT", 60))  # seconds
+
+# Render-specific performance configuration
+if os.getenv("RENDER"):
+    # Render free tier has limited resources
+    PREDICTION_TIMEOUT = int(os.getenv("PREDICTION_TIMEOUT", 60))  # Increase timeout
+    MODEL_LOAD_TIMEOUT = int(os.getenv("MODEL_LOAD_TIMEOUT", 120))  # Increase load timeout
 
 # =============================================================================
 # VALIDATION FUNCTIONS
