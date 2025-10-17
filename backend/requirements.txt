@@ -1,8 +1,0 @@
-fastapi
-uvicorn[standard]
-tensorflow
-pillow
-numpy
-opencv-python-headless
-gradio
-python-multipart

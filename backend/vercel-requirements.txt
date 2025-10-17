@@ -1,8 +1,0 @@
-# Vercel-optimized requirements
-fastapi
-uvicorn[standard]
-tensorflow-cpu
-pillow
-numpy
-opencv-python-headless
-python-multipart

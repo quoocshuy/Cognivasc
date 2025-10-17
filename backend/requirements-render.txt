@@ -1,9 +1,0 @@
-# Requirements optimized for Render deployment
-fastapi
-uvicorn[standard]
-tensorflow-cpu
-pillow
-numpy
-opencv-python-headless
-gradio
-python-multipart
