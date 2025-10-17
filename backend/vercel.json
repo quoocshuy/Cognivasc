@@ -3,7 +3,10 @@
   "builds": [
     {
       "src": "api/vercel_handler.py",
-      "use": "@vercel/python"
+      "use": "@vercel/python",
+      "config": {
+        "maxDuration": 10
+      }
     }
   ],
   "routes": [
@@ -12,11 +15,6 @@
       "dest": "/api/vercel_handler.py"
     }
   ],
-  "functions": {
-    "api/vercel_handler.py": {
-      "maxDuration": 10
-    }
-  },
   "env": {
     "PYTHON_VERSION": "3.11"
   }
